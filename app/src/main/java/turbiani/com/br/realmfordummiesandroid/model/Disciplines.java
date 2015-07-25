@@ -8,13 +8,13 @@ import io.realm.RealmObject;
 public class Disciplines extends RealmObject {
 
     private String name;
-    private String course;
+    private String grade;
 
     public Disciplines(){}
 
-    public Disciplines(String name, String course) {
+    public Disciplines(String name, String grade) {
         this.name = name;
-        this.course = course;
+        this.grade = grade;
     }
 
     public String getName() {
@@ -25,11 +25,11 @@ public class Disciplines extends RealmObject {
         this.name = name;
     }
 
-    public String getCourse() {
-        return course;
+    public String getGrade() {
+        return grade;
     }
 
-    public void setCourse(String course) {
-        this.course = course;
+    public void setGrade(String grade) {
+        this.grade = grade;
     }
 }

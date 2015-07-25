@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Add studentName Discipline"
+        android:id="@+id/labelHome"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/darker_gray"
+        android:gravity="center"
+        android:layout_alignParentTop="true"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Name:"
+        android:id="@+id/txtName"
+        android:layout_alignTop="@+id/editText"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="185dp"
+        android:layout_height="22dp"
+        android:id="@+id/editText"
+        android:layout_below="@+id/labelHome"
+        android:layout_toEndOf="@+id/txtName"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add"
+        android:id="@+id/btnAddStudent"
+        android:layout_alignBottom="@+id/editText2"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="32dp" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/studentDisciplines"
+        android:layout_marginTop="31dp"
+        android:layout_below="@+id/btnAddStudent"
+        android:layout_alignParentStart="true"
+        android:choiceMode="singleChoice" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Grade:"
+        android:id="@+id/txtGrade"
+        android:layout_below="@+id/editText"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="22dp" />
+
+    <EditText
+        android:layout_width="185dp"
+        android:layout_height="22dp"
+        android:id="@+id/editText2"
+        android:layout_alignBottom="@+id/txtGrade"
+        android:layout_toEndOf="@+id/txtGrade" />
+</RelativeLayout>
