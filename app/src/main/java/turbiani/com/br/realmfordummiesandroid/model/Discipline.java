@@ -5,14 +5,14 @@ import io.realm.RealmObject;
 /**
  * Created by turbiani on 23/07/15.
  */
-public class Disciplines extends RealmObject {
+public class Discipline extends RealmObject {
 
     private String name;
     private String grade;
 
-    public Disciplines(){}
+    public Discipline(){}
 
-    public Disciplines(String name, String grade) {
+    public Discipline(String name, String grade) {
         this.name = name;
         this.grade = grade;
     }

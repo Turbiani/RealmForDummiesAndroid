@@ -22,16 +22,16 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Name:"
-        android:id="@+id/txtName"
-        android:layout_alignTop="@+id/editText"
+        android:id="@+id/labelStudentName"
+        android:layout_alignBottom="@+id/txtStudentName"
         android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="185dp"
-        android:layout_height="22dp"
-        android:id="@+id/editText"
+        android:layout_height="38dp"
+        android:id="@+id/txtStudentName"
         android:layout_below="@+id/labelHome"
-        android:layout_toEndOf="@+id/txtName"
+        android:layout_toEndOf="@+id/labelStudentName"
         android:layout_marginTop="16dp" />
 
     <Button
@@ -40,7 +40,7 @@
         android:text="Add"
         android:id="@+id/btnAddStudent"
         android:layout_marginTop="23dp"
-        android:layout_below="@+id/editText"
+        android:layout_below="@+id/txtStudentName"
         android:layout_centerHorizontal="true" />
 
     <ListView
