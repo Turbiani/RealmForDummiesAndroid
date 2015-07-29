@@ -1,5 +1,6 @@
 package turbiani.com.br.realmfordummiesandroid.model;
 
+import java.util.Random;
 import java.util.UUID;
 
 import io.realm.RealmList;
@@ -16,12 +17,14 @@ public class Student extends RealmObject {
     private String name;
     private RealmList<Discipline> disciplines;
 
-    public Student(){}
+    public Student(){
+        this.id = new Random().nextInt(Integer.MAX_VALUE);
+    }
 
     public Student(String name, RealmList<Discipline> disciplines) {
         this.name = name;
         this.disciplines = disciplines;
-        this.id = Integer.parseInt(UUID.randomUUID().toString());
+        this.id = new Random().nextInt(Integer.MAX_VALUE);
     }
 
     public String getName() {
