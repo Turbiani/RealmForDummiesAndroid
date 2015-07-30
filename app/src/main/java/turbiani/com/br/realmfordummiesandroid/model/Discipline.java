@@ -1,11 +1,15 @@
 package turbiani.com.br.realmfordummiesandroid.model;
 
+import java.io.Serializable;
+
 import io.realm.RealmObject;
 
 /**
  * Created by turbiani on 23/07/15.
  */
-public class Discipline extends RealmObject {
+public class Discipline extends RealmObject implements Serializable{
+
+    private static final long serialVersionID = 1l;
 
     private String name;
     private String grade;

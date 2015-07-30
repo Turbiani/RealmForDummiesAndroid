@@ -1,5 +1,6 @@
 package turbiani.com.br.realmfordummiesandroid.model;
 
+import java.io.Serializable;
 import java.util.Random;
 import java.util.UUID;
 
@@ -10,7 +11,9 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by turbiani on 23/07/15.
  */
-public class Student extends RealmObject {
+public class Student extends RealmObject implements Serializable {
+
+    private static final long serialVersionID = 1l;
 
     @PrimaryKey
     private int id;

@@ -1,9 +1,11 @@
 package turbiani.com.br.realmfordummiesandroid.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,6 +20,7 @@ import io.realm.RealmConfiguration;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import turbiani.com.br.realmfordummiesandroid.R;
+import turbiani.com.br.realmfordummiesandroid.adapter.RealmStudentListAdapter;
 import turbiani.com.br.realmfordummiesandroid.model.Discipline;
 import turbiani.com.br.realmfordummiesandroid.model.Student;
 
@@ -26,10 +29,10 @@ import turbiani.com.br.realmfordummiesandroid.model.Student;
  */
 public class MainActivity extends Activity{
 
-    private List<Student>   students;
-    private ListView        studentList;
-    private Button          btnAddStudent;
-    private Realm           realm;
+    private List<Student>           students;
+    private ListView                studentList;
+    private Button                  btnAddStudent;
+    private Realm                   realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +46,13 @@ public class MainActivity extends Activity{
         super.onResume();
         studentList     = (ListView) findViewById(R.id.studentList);
         btnAddStudent   = (Button) findViewById(R.id.btnAddStudent);
-        students        = findAll();
-
-        studentList.setAdapter(getAdapterToStudentList());
         final EditText studentName = (EditText) findViewById(R.id.txtStudentName);
+
+        students        = findAllAsList();
+        studentList.setAdapter(getAdapterToStudentList());
+
+
+        //ADD BUTTON ONCLICK LISTENER
         btnAddStudent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,8 +60,19 @@ public class MainActivity extends Activity{
                 student.setName(studentName.getEditableText().toString());
                 addStudent(student);
 
-                students = findAll();
                 studentList.setAdapter(getAdapterToStudentList());
+            }
+        });
+
+        //ADD ITEM CLICK LISTENER
+        studentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int studentID = students.get(position).getId();
+
+                Intent intent = new Intent(MainActivity.this, AddDiscipline.class);
+                intent.putExtra("StudentID", studentID);
+                startActivity(intent);
             }
         });
     }
@@ -63,11 +80,18 @@ public class MainActivity extends Activity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        realm.close(); // Remember to close Realm when done.
+        realm.close();
     }
 
 
-    private List<Student> findAll(){
+    private RealmResults<Student> findAll(){
+        RealmResults<Student> results = null;
+        results = realm.where(Student.class).findAll();
+
+        return results;
+    }
+
+    private List<Student> findAllAsList(){
         List<Student> students = new ArrayList<Student>();
         RealmResults<Student> results = null;
         results = realm.where(Student.class).findAll();
@@ -87,29 +111,12 @@ public class MainActivity extends Activity{
         realm.commitTransaction();
     }
 
-    private void addDisciplineToStudent(Student student, Discipline discipline){
-        realm.beginTransaction();
-        Student studentPersistable = realm.where(Student.class)
-                .equalTo("id", student.getId())
-                .findFirst();
-        RealmList<Discipline> studentDisciplines = studentPersistable.getDisciplines();
-        studentDisciplines.add(discipline);
-        studentPersistable.setDisciplines(studentDisciplines);
-        realm.commitTransaction();
-    }
-
-    private Student findStudentById(int id){
-        return realm.where(Student.class)
-                .equalTo("id", id)
-                .findFirst();
-    }
 
     private ListAdapter getAdapterToStudentList(){
-        final ArrayAdapter<Student> adapter = new ArrayAdapter<Student>(
-                this,
-                android.R.layout.simple_list_item_1,
-                students
-        );
+       final ListAdapter adapter = new RealmStudentListAdapter(this
+                , R.id.studentDisciplineList
+                , findAll()
+                , true);
 
         return adapter;
     }
