@@ -17,6 +17,7 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import turbiani.com.br.realmfordummiesandroid.DAO.StudentDAO;
 import turbiani.com.br.realmfordummiesandroid.R;
 import turbiani.com.br.realmfordummiesandroid.adapter.RealmStudentDisciplinesListAdapter;
 import turbiani.com.br.realmfordummiesandroid.model.Discipline;
@@ -31,13 +32,13 @@ public class AddDiscipline extends Activity {
     private List<Discipline>    disciplines;
     private ListView            studentDisciplineList;
     private Button              btnAddDiscipline;
-    private Realm               realm;
+    private StudentDAO          studentDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_discipline);
-        realm = Realm.getInstance(this);
+        studentDAO  = StudentDAO.getInstance();
     }
 
     @Override
@@ -48,8 +49,8 @@ public class AddDiscipline extends Activity {
         final EditText disciplineName   = (EditText) findViewById(R.id.txtDisciplineName);
         final EditText disciplineGrade  = (EditText) findViewById(R.id.txtGrade);
 
-        //MAKE USER BY ID
-        this.student = findStudentById((Integer.parseInt(getIntent().getExtras().get("StudentID").toString())));
+        //GET STUDENT FROM PREVIOUS ACTIVITY - I PREFER TO USE PARCELABLE OR SERIALIZABLE, SO I AM SEARCHING TO DO THAT
+        this.student = studentDAO.findStudentById((Integer.parseInt(getIntent().getExtras().get("StudentID").toString())));
         studentDisciplineList.setAdapter(getAdapterToStudentDisciplineList());
 
         //CHANGE DE MENU TEXT
@@ -62,54 +63,20 @@ public class AddDiscipline extends Activity {
                 Discipline discipline = new Discipline();
                 discipline.setName(disciplineName.getEditableText().toString());
                 discipline.setGrade(disciplineGrade.getEditableText().toString());
-                addDisciplineToCurrentStudent(discipline);
-
+                discipline.setStudentId(student.getId());
+                studentDAO.addDisciplineToStudent(discipline, student);
                 studentDisciplineList.setAdapter(getAdapterToStudentDisciplineList());
             }
         });
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        realm.close();
-    }
-
-    private Student findStudentById(int id){
-        return realm.where(Student.class)
-                .equalTo("id", id)
-                .findFirst();
-    }
-
-    private List<Discipline> findAllDisciplinesFromStudentByID(int id){
-        Student student = findStudentById(id);
-        return student.getDisciplines();
-    }
-
-    private void addDisciplineToCurrentStudent(Discipline discipline){
-        realm.beginTransaction();
-
-        Student studentPersistable = findStudentById(this.student.getId());
-        RealmList<Discipline> studentDisciplines = studentPersistable.getDisciplines();
-        studentDisciplines.add(discipline);
-        studentPersistable.setDisciplines(studentDisciplines);
-
-        realm.copyToRealm(studentPersistable);
-        realm.commitTransaction();
-    }
-
-
     private ListAdapter getAdapterToStudentDisciplineList(){
-        disciplines   = findAllDisciplinesFromStudentByID(this.student.getId());
-
-        final ArrayAdapter<Discipline> adapter = new ArrayAdapter<Discipline>(
-                this,
-                android.R.layout.simple_list_item_1,
-                disciplines
-        );
+        final ListAdapter adapter = new RealmStudentDisciplinesListAdapter(this
+                , R.id.studentDisciplineList
+                , studentDAO.findDisciplinesFromStudentByID(this.student.getId())
+                , true);
 
         return adapter;
     }
-
 }

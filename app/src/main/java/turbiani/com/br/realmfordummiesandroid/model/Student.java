@@ -1,11 +1,16 @@
 package turbiani.com.br.realmfordummiesandroid.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -13,7 +18,8 @@ import io.realm.annotations.PrimaryKey;
  */
 public class Student extends RealmObject implements Serializable {
 
-    private static final long serialVersionID = 1l;
+    @Ignore
+    public static final long serialVersionUID = 10L;
 
     @PrimaryKey
     private int id;
@@ -28,6 +34,12 @@ public class Student extends RealmObject implements Serializable {
         this.name = name;
         this.disciplines = disciplines;
         this.id = new Random().nextInt(Integer.MAX_VALUE);
+    }
+
+    private Student(Parcel p){
+        this.name = p.readString();
+        this.disciplines = new RealmList<Discipline>();
+        this.id = p.readInt();
     }
 
     public String getName() {
@@ -53,4 +65,5 @@ public class Student extends RealmObject implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
+
 }

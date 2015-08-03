@@ -3,8 +3,12 @@
 
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
-    <application android:allowBackup="true" android:label="@string/app_name"
-        android:icon="@mipmap/ic_launcher" android:theme="@style/AppTheme">
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
+        android:theme="@style/AppTheme"
+        android:name=".application.RealmForDummiesAndroid">
 
         <activity android:name=".activities.MainActivity"
             android:label="@string/app_name" >

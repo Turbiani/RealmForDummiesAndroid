@@ -19,6 +19,7 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import turbiani.com.br.realmfordummiesandroid.DAO.StudentDAO;
 import turbiani.com.br.realmfordummiesandroid.R;
 import turbiani.com.br.realmfordummiesandroid.adapter.RealmStudentListAdapter;
 import turbiani.com.br.realmfordummiesandroid.model.Discipline;
@@ -29,16 +30,16 @@ import turbiani.com.br.realmfordummiesandroid.model.Student;
  */
 public class MainActivity extends Activity{
 
-    private List<Student>           students;
+    private RealmResults<Student>   students;
     private ListView                studentList;
     private Button                  btnAddStudent;
-    private Realm                   realm;
+    private StudentDAO              studentDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        realm = Realm.getInstance(this);
+        studentDAO  = StudentDAO.getInstance();
     }
 
     @Override
@@ -48,8 +49,8 @@ public class MainActivity extends Activity{
         btnAddStudent   = (Button) findViewById(R.id.btnAddStudent);
         final EditText studentName = (EditText) findViewById(R.id.txtStudentName);
 
-        students        = findAllAsList();
-        studentList.setAdapter(getAdapterToStudentList());
+        students        = studentDAO.findAll();
+        studentList.setAdapter(getAdapterToStudentList(students));
 
 
         //ADD BUTTON ONCLICK LISTENER
@@ -58,8 +59,7 @@ public class MainActivity extends Activity{
             public void onClick(View v) {
                 Student student = new Student();
                 student.setName(studentName.getEditableText().toString());
-                addStudent(student);
-
+                studentDAO.create(student);
                 studentList.setAdapter(getAdapterToStudentList());
             }
         });
@@ -68,54 +68,30 @@ public class MainActivity extends Activity{
         studentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int studentID = students.get(position).getId();
-
                 Intent intent = new Intent(MainActivity.this, AddDiscipline.class);
-                intent.putExtra("StudentID", studentID);
+                //Here, i tried to use Parcelable and Serializable for pass object between two activities.
+                //But, RealmObject need to code class as pojo (Kick Parcelable choice),
+                //RealmObject create a proxy object from my model, Serializable dont work (I dont find out the problem reason yet )
+                intent.putExtra("StudentID", students.get(position).getId());
                 startActivity(intent);
             }
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        realm.close();
-    }
-
-
-    private RealmResults<Student> findAll(){
-        RealmResults<Student> results = null;
-        results = realm.where(Student.class).findAll();
-
-        return results;
-    }
-
-    private List<Student> findAllAsList(){
-        List<Student> students = new ArrayList<Student>();
-        RealmResults<Student> results = null;
-        results = realm.where(Student.class).findAll();
-
-        if(results.size() > 0){
-            for (Student student : results) {
-                students.add(student);
-            }
-        }
-
-        return students;
-    }
-
-    private void addStudent(Student student){
-        realm.beginTransaction();
-        realm.copyToRealm(student);
-        realm.commitTransaction();
-    }
-
-
     private ListAdapter getAdapterToStudentList(){
-       final ListAdapter adapter = new RealmStudentListAdapter(this
+        students        = studentDAO.findAll();
+        final ListAdapter adapter = new RealmStudentListAdapter(this
                 , R.id.studentDisciplineList
-                , findAll()
+                , students
+                , true);
+
+        return adapter;
+    }
+
+    private ListAdapter getAdapterToStudentList(RealmResults<Student> students){
+        final ListAdapter adapter = new RealmStudentListAdapter(this
+                , R.id.studentDisciplineList
+                , students
                 , true);
 
         return adapter;
