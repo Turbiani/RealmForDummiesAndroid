@@ -16,10 +16,7 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by turbiani on 23/07/15.
  */
-public class Student extends RealmObject implements Serializable {
-
-    @Ignore
-    public static final long serialVersionUID = 10L;
+public class Student extends RealmObject  {
 
     @PrimaryKey
     private int id;
