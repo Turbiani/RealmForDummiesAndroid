@@ -2,6 +2,7 @@ package turbiani.com.br.realmfordummiesandroid.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -10,16 +11,13 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import io.realm.Realm;
-import io.realm.RealmList;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
-import turbiani.com.br.realmfordummiesandroid.DAO.StudentDAO;
+import turbiani.com.br.realmfordummiesandroid.adapter.StudentAdapter;
+import turbiani.com.br.realmfordummiesandroid.dao.StudentDAO;
 import turbiani.com.br.realmfordummiesandroid.R;
 import turbiani.com.br.realmfordummiesandroid.adapter.RealmStudentDisciplinesListAdapter;
+import turbiani.com.br.realmfordummiesandroid.dto.StudentDTO;
 import turbiani.com.br.realmfordummiesandroid.model.Discipline;
 import turbiani.com.br.realmfordummiesandroid.model.Student;
 
@@ -28,17 +26,18 @@ import turbiani.com.br.realmfordummiesandroid.model.Student;
  */
 public class AddDiscipline extends Activity {
 
-    private Student             student;
-    private List<Discipline>    disciplines;
+    private StudentDTO          studentDTO;
     private ListView            studentDisciplineList;
     private Button              btnAddDiscipline;
     private StudentDAO          studentDAO;
+    private StudentAdapter      adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_discipline);
         studentDAO  = StudentDAO.getInstance();
+        adapter     = new StudentAdapter();
     }
 
     @Override
@@ -49,13 +48,18 @@ public class AddDiscipline extends Activity {
         final EditText disciplineName   = (EditText) findViewById(R.id.txtDisciplineName);
         final EditText disciplineGrade  = (EditText) findViewById(R.id.txtGrade);
 
-        //GET STUDENT FROM PREVIOUS ACTIVITY - I PREFER TO USE PARCELABLE OR SERIALIZABLE, SO I AM SEARCHING TO DO THAT
-        this.student = studentDAO.findStudentById((Integer.parseInt(getIntent().getExtras().get("StudentID").toString())));
-        studentDisciplineList.setAdapter(getAdapterToStudentDisciplineList());
+        //this.student = studentDAO.findStudentById((Integer.parseInt(getIntent().getExtras().get("StudentID").toString())));
+        try {
+            this.studentDTO = getIntent().getParcelableExtra("StudentDTO");
+            studentDisciplineList.setAdapter(getAdapterToStudentDisciplineList());
+        }catch (Exception e){
+            Log.e("Parcelable", e.getMessage());
+        }
+
 
         //CHANGE DE MENU TEXT
         TextView labelHome = (TextView) findViewById(R.id.labelHome);
-        labelHome.setText("Add " + this.student.getName() + "'s Disciplines");
+        labelHome.setText("Add " + this.studentDTO.getStudentName() + "'s Disciplines");
         //ADD BUTTON ONCLICK LISTENER
         btnAddDiscipline.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,8 +67,8 @@ public class AddDiscipline extends Activity {
                 Discipline discipline = new Discipline();
                 discipline.setName(disciplineName.getEditableText().toString());
                 discipline.setGrade(disciplineGrade.getEditableText().toString());
-                discipline.setStudentId(student.getId());
-                studentDAO.addDisciplineToStudent(discipline, student);
+                discipline.setStudentId(studentDTO.getStudentId());
+                studentDAO.addDisciplineToStudent(discipline, adapter.adaptFromStudentDTO(studentDTO));
                 studentDisciplineList.setAdapter(getAdapterToStudentDisciplineList());
             }
         });
@@ -74,9 +78,11 @@ public class AddDiscipline extends Activity {
     private ListAdapter getAdapterToStudentDisciplineList(){
         final ListAdapter adapter = new RealmStudentDisciplinesListAdapter(this
                 , R.id.studentDisciplineList
-                , studentDAO.findDisciplinesFromStudentByID(this.student.getId())
+                , studentDAO.findDisciplinesFromStudentByID(this.studentDTO.getStudentId())
                 , true);
 
         return adapter;
     }
+
+
 }

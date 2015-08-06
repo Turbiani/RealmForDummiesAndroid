@@ -1,6 +1,4 @@
-package turbiani.com.br.realmfordummiesandroid.DAO;
-
-import java.util.List;
+package turbiani.com.br.realmfordummiesandroid.dao;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
