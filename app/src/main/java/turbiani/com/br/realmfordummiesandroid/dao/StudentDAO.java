@@ -9,7 +9,7 @@ import turbiani.com.br.realmfordummiesandroid.model.Student;
  * Created by turbiani on 30/07/15.
  */
 public final class StudentDAO {
-    private static StudentDAO instance = null;
+    private static StudentDAO instance = new StudentDAO();
     private static Realm      realm    = null;
 
     private StudentDAO(){
@@ -18,10 +18,7 @@ public final class StudentDAO {
         }
     }
 
-    public static synchronized StudentDAO getInstance(){
-        if(instance==null){
-            instance = new StudentDAO();
-        }
+    public static StudentDAO getInstance(){
         return instance;
     }
 
